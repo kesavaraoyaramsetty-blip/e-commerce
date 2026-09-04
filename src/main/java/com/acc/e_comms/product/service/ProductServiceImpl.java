@@ -1,5 +1,6 @@
 package com.acc.e_comms.product.service;
 
+import com.acc.e_comms.exception.ProductNotFoundException;
 import com.acc.e_comms.product.dto.ProductRequest;
 import com.acc.e_comms.product.dto.ProductResponse;
 import com.acc.e_comms.product.entity.Product;
@@ -39,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Product not found"));
+                        new ProductNotFoundException("Product not found"));
 
         return mapToResponse(product);
     }
