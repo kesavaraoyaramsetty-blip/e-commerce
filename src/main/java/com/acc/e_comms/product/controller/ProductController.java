@@ -32,10 +32,19 @@ public class ProductController {
         return productService.getProduct(id);
     }
 
-    @GetMapping
-    public List<ProductResponse> getAllProducts() {
+    //single column sorting
+//    @GetMapping
+//    public List<ProductResponse> getAllProducts(@RequestParam String sortBy,
+//                                                @RequestParam String direction) {
+//
+//        return productService.getAllProducts(sortBy,direction);
+//    }
 
-        return productService.getAllProducts();
+    //multi column sorting
+    @GetMapping
+    public List<ProductResponse> getAllProducts(@RequestParam List<String> sort) {
+
+        return productService.getAllProducts(sort);
     }
 
     @PutMapping("/{id}")

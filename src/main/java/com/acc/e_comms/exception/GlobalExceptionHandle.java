@@ -8,36 +8,57 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandle {
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<String> handleProductNotFound(ProductNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        //return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        return ResponseEntity.
+                status(HttpStatus.NOT_FOUND)
+                .body(response);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleInvalidMethodArgumentType(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidMethodArgumentType(MethodArgumentTypeMismatchException ex) {
         String message = "Invalid value : " + ex.getValue() + " for :" + ex.getName();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                message,
+                LocalDateTime.now()
+        );
+        //return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<String>> handleInvalidMethodArguments(MethodArgumentNotValidException ex) {
-//        String message = ex.getBindingResult()
-//                .getFieldErrors()
-//                .stream()
-//                .map(error->error.getDefaultMessage())
-//                .collect(Collectors.joining(","));
-
-        // if we want the return type as list
-        List<String> message = ex.getBindingResult()
+    public ResponseEntity<ErrorResponse> handleInvalidMethodArguments(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error->error.getDefaultMessage())
-                .toList();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+                .collect(Collectors.joining(","));
+
+        // if we want the return type as list
+//        List<String> message = ex.getBindingResult()
+//                .getFieldErrors()
+//                .stream()
+//                .map(error->error.getDefaultMessage())
+//                .toList();
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                message,
+                LocalDateTime.now()
+        );
+        //return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }

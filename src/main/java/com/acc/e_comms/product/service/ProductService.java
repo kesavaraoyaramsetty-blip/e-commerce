@@ -11,7 +11,11 @@ public interface ProductService {
 
     ProductResponse getProduct(Long id);
 
-    List<ProductResponse> getAllProducts();
+    //implementing sorting functionality
+    //List<ProductResponse> getAllProducts(String sortBy, String direction);
+
+    //multi column sorting
+    List<ProductResponse> getAllProducts(List<String> sort);
 
     ProductResponse updateProduct(Long id, ProductRequest request);
 

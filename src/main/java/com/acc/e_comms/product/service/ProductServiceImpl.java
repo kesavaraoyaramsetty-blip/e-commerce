@@ -45,15 +45,42 @@ public class ProductServiceImpl implements ProductService {
         return mapToResponse(product);
     }
 
+    //multi column sorting
+
     @Override
-    public List<ProductResponse> getAllProducts() {
+    public List<ProductResponse> getAllProducts(List<String> sort) {
+        List<Sort.Order> sorts = sort.stream()
+                .map(value->{
+                    String[] values = value.split(",");
+                    String field = values[0];
+                    String direction = values[1];
 
-        List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.ASC,"id"));
+                    return new Sort.Order(
+                            Sort.Direction.fromString(direction),
+                            field
+                    );
 
-        return products.stream()
-                .map(this::mapToResponse)
-                .toList();
+                }).toList();
+        Sort sorting = Sort.by(sorts);
+        List<Product> products = productRepository.findAll(sorting);
+        return products.stream().map(this::mapToResponse).toList();
     }
+
+    //single column sorting
+//    @Override
+//    public List<ProductResponse> getAllProducts(String sortBy, String direction) {
+//
+//        Sort sort = Sort.by(
+//                Sort.Direction.fromString(direction),
+//                sortBy
+//        );
+//        //List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.ASC,"id"));
+//        List<Product> products = productRepository.findAll(sort);
+//
+//        return products.stream()
+//                .map(this::mapToResponse)
+//                .toList();
+//    }
 
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest request) {
